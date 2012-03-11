@@ -17,7 +17,9 @@
 /******/({
 /******/0: function(module, exports, require) {
 
-var domjs = require(1)(document, require(2));
+require(4)(require); // For node.js useage
+
+var domjs = require(5)(document, require(1));
 
 var mydom = domjs.build("./example");
 
@@ -27,11 +29,66 @@ document.body.appendChild(mydom);
 /******/
 /******/1: function(module, exports, require) {
 
+/***/module.exports = function(name) {
+/***/	var map = {"./example.js":2,"./example2.js":3};
+/***/	return require(map[name]||map[name+".web.js"]||map[name+".js"]);
+/***/};
+
+/******/},
+/******/
+/******/2: function(module, exports, require) {
+
+header(
+	h1('Heading'),
+	h2('Subheading'));
+
+nav(
+	ul({ 'class': 'breadcrumbs' },
+		li(a({ href: '/' }, 'Home')),
+		li(a({ href: '/section/'}, 'Section')),
+		li(a('Subject'))));
+
+article(
+	p('Lorem ipsum...'));
+
+footer('Footer stuff');
+
+/******/},
+/******/
+/******/3: function(module, exports, require) {
+
+header(
+	h1('Heading2'),
+	h2('Subheading2'));
+
+nav(
+	ul({ 'class': 'breadcrumbs' },
+		li(a({ href: '/' }, 'Home2')),
+		li(a({ href: '/section/'}, 'Section2')),
+		li(a('Subject'))));
+
+article(
+	p('Lorem ipsum2...'));
+
+footer('Footer stuff2');
+
+
+/******/},
+/******/
+/******/4: function(module, exports, require) {
+
+// No polyfill needed when compiled with webpack
+module.exports = function(){}
+
+/******/},
+/******/
+/******/5: function(module, exports, require) {
+
 'use strict';
 
-var isFunction = require(8)
+var isFunction = require(10)
   , extend     = require(9)
-  , domjs      = require(5)
+  , domjs      = require(6)
 
   , html5js;
 
@@ -64,55 +121,7 @@ module.exports = function (document, require) {
 
 /******/},
 /******/
-/******/2: function(module, exports, require) {
-
-/***/module.exports = function(name) {
-/***/	var map = {"./example2.js":4,"./example.js":3};
-/***/	return require(map[name]||map[name+".web.js"]||map[name+".js"]);
-/***/};
-
-/******/},
-/******/
-/******/3: function(module, exports, require) {
-
-header(
-	h1('Heading'),
-	h2('Subheading'));
-
-nav(
-	ul({ 'class': 'breadcrumbs' },
-		li(a({ href: '/' }, 'Home')),
-		li(a({ href: '/section/'}, 'Section')),
-		li(a('Subject'))));
-
-article(
-	p('Lorem ipsum...'));
-
-footer('Footer stuff');
-
-/******/},
-/******/
-/******/4: function(module, exports, require) {
-
-header(
-	h1('Heading2'),
-	h2('Subheading2'));
-
-nav(
-	ul({ 'class': 'breadcrumbs' },
-		li(a({ href: '/' }, 'Home2')),
-		li(a({ href: '/section/'}, 'Section2')),
-		li(a('Subject'))));
-
-article(
-	p('Lorem ipsum2...'));
-
-footer('Footer stuff2');
-
-
-/******/},
-/******/
-/******/5: function(module, exports, require) {
+/******/6: function(module, exports, require) {
 
 'use strict';
 
@@ -120,18 +129,18 @@ var forEach       = Array.prototype.forEach
   , map           = Array.prototype.map
   , slice         = Array.prototype.slice
   , keys          = Object.keys
-  , reserved      = require(10).all
-  , isFunction    = require(8)
-  , curry         = require(11)
-  , dscope        = require(6)
-  , compact       = require(12)
-  , flatten       = require(13)
-  , toArray       = require(15)
-  , isList        = require(16)
-  , bindMethods   = require(14)
-  , isPlainObject = require(17)
-  , oForEach      = require(18)
-  , isNode        = require(7)
+  , reserved      = require(11).all
+  , isFunction    = require(10)
+  , curry         = require(12)
+  , dscope        = require(7)
+  , compact       = require(13)
+  , flatten       = require(19)
+  , toArray       = require(14)
+  , isList        = require(15)
+  , bindMethods   = require(16)
+  , isPlainObject = require(22)
+  , oForEach      = require(17)
+  , isNode        = require(8)
 
   , renameReserved, nodeMap, nextInit;
 
@@ -281,7 +290,7 @@ module.exports = {
 
 /******/},
 /******/
-/******/6: function(module, exports, require) {
+/******/7: function(module, exports, require) {
 
 // Dynamic scope for given function
 // Pollutes global scope for time of function call
@@ -289,8 +298,8 @@ module.exports = {
 'use strict';
 
 var keys     = Object.keys
-  , global   = require(24)
-  , reserved = require(10).all
+  , global   = require(29)
+  , reserved = require(11).all
 
   , set, unset;
 
@@ -324,7 +333,7 @@ module.exports = function (fn, scope) {
 
 /******/},
 /******/
-/******/7: function(module, exports, require) {
+/******/8: function(module, exports, require) {
 
 // Whether object is DOM node
 
@@ -338,23 +347,6 @@ module.exports = function (x) {
 
 /******/},
 /******/
-/******/8: function(module, exports, require) {
-
-// Is f a function ?
-
-'use strict';
-
-var toString = Object.prototype.toString
-
-  , id = toString.call(function () {});
-
-module.exports = function (f) {
-	return (typeof f === "function") && (toString.call(f) === id);
-};
-
-
-/******/},
-/******/
 /******/9: function(module, exports, require) {
 
 // extend ES3 way, no descriptors involved
@@ -363,7 +355,7 @@ module.exports = function (f) {
 'use strict';
 
 var create     = Object.create
-  , map        = require(19)
+  , map        = require(18)
   , merge      = require(20)
   , currySuper = require(21)
 
@@ -382,13 +374,30 @@ module.exports = function (properties) {
 /******/
 /******/10: function(module, exports, require) {
 
+// Is f a function ?
+
+'use strict';
+
+var toString = Object.prototype.toString
+
+  , id = toString.call(function () {});
+
+module.exports = function (f) {
+	return (typeof f === "function") && (toString.call(f) === id);
+};
+
+
+/******/},
+/******/
+/******/11: function(module, exports, require) {
+
 // List of EcmaScript 5th edition reserved keywords
 
 'use strict';
 
 var freeze  = Object.freeze
-  , setTrue = require(22)(true)
-  , flatten = require(23);
+  , setTrue = require(23)(true)
+  , flatten = require(24);
 
 // 7.6.1.1 Keywords
 ['break', 'case', 'catch', 'continue', 'debugger', 'default', 'delete', 'do',
@@ -411,7 +420,7 @@ freeze(exports.all = flatten.call(exports));
 
 /******/},
 /******/
-/******/11: function(module, exports, require) {
+/******/12: function(module, exports, require) {
 
 // Returns a function that, applied to an argument list arg2, applies the
 // underlying function to args ++ arg2.
@@ -423,7 +432,7 @@ freeze(exports.all = flatten.call(exports));
 
 var apply          = Function.prototype.apply
   , assertCallable = require(25)
-  , toArray        = require(15);
+  , toArray        = require(14);
 
 module.exports = function () {
 	var fn, args;
@@ -437,7 +446,7 @@ module.exports = function () {
 
 /******/},
 /******/
-/******/12: function(module, exports, require) {
+/******/13: function(module, exports, require) {
 
 // Removes all falsy values.
 //
@@ -454,7 +463,113 @@ module.exports = function () {
 
 /******/},
 /******/
-/******/13: function(module, exports, require) {
+/******/14: function(module, exports, require) {
+
+// Convert array-like object to an Array
+
+'use strict';
+
+var isArray       = Array.isArray
+  , slice         = Array.prototype.slice
+  , isArguments   = require(26)
+
+module.exports = function () {
+	if (isArray(this)) {
+		return this;
+	} else if (isArguments(this)) {
+		return (this.length === 1) ? [this[0]] : Array.apply(null, this);
+	} else {
+		return slice.call(this);
+	}
+};
+
+
+/******/},
+/******/
+/******/15: function(module, exports, require) {
+
+// Whether object is array-like object
+
+'use strict';
+
+module.exports = function (x) {
+	return ((x != null) && (typeof x.length === 'number') &&
+		((typeof x === "object") || (typeof x === "string"))) || false;
+};
+
+
+/******/},
+/******/
+/******/16: function(module, exports, require) {
+
+// Bind all object functions to given scope.
+// If scope is not given then functions are bound to object they're assigned to.
+// This emulates Python's bound instance methods.
+// If source (second argument) is present then all functions from source are
+// binded to scope and assigned to object.
+//
+// Inspired by:
+// http://mochi.github.com/mochikit/doc/html/MochiKit/Base.html#fn-bindmethods
+
+'use strict';
+
+var bind          = Function.prototype.bind
+  , assertNotNull = require(27)
+  , isCallable    = require(28)
+  , forEach       = require(17)
+
+module.exports = function (scope, source) {
+	assertNotNull(this);
+	scope = scope || this;
+	source = source || this;
+	forEach.call(source, function (value, key) {
+		if (isCallable(value)) {
+			this[key] = bind.call(value, scope);
+		}
+	}, this);
+	return this;
+};
+
+
+/******/},
+/******/
+/******/17: function(module, exports, require) {
+
+// Analogous to Array.prototype.forEach
+//
+// Calls a function for each key-value pair found in object
+// Additionally you can provide compareFn to iterate object in desired order
+
+'use strict';
+
+module.exports = require(30)('forEach');
+
+
+/******/},
+/******/
+/******/18: function(module, exports, require) {
+
+// Analogous to Array.prototype.map
+//
+// Creates a new object with properties which values are results of calling
+// a provided function on every key-value pair in this object.
+
+'use strict';
+
+var forEach = require(17);
+
+module.exports = function (cb, thisArg) {
+	var o = {};
+	forEach.call(this, function (value, key) {
+		o[key] = cb.call(this, value, key);
+	}, thisArg);
+	return o;
+};
+
+
+/******/},
+/******/
+/******/19: function(module, exports, require) {
 
 // Flattens nested array-like objects.
 
@@ -475,134 +590,6 @@ module.exports = function flatten () {
 
 /******/},
 /******/
-/******/14: function(module, exports, require) {
-
-// Bind all object functions to given scope.
-// If scope is not given then functions are bound to object they're assigned to.
-// This emulates Python's bound instance methods.
-// If source (second argument) is present then all functions from source are
-// binded to scope and assigned to object.
-//
-// Inspired by:
-// http://mochi.github.com/mochikit/doc/html/MochiKit/Base.html#fn-bindmethods
-
-'use strict';
-
-var bind          = Function.prototype.bind
-  , assertNotNull = require(26)
-  , isCallable    = require(27)
-  , forEach       = require(18)
-
-module.exports = function (scope, source) {
-	assertNotNull(this);
-	scope = scope || this;
-	source = source || this;
-	forEach.call(source, function (value, key) {
-		if (isCallable(value)) {
-			this[key] = bind.call(value, scope);
-		}
-	}, this);
-	return this;
-};
-
-
-/******/},
-/******/
-/******/15: function(module, exports, require) {
-
-// Convert array-like object to an Array
-
-'use strict';
-
-var isArray       = Array.isArray
-  , slice         = Array.prototype.slice
-  , isArguments   = require(29)
-
-module.exports = function () {
-	if (isArray(this)) {
-		return this;
-	} else if (isArguments(this)) {
-		return (this.length === 1) ? [this[0]] : Array.apply(null, this);
-	} else {
-		return slice.call(this);
-	}
-};
-
-
-/******/},
-/******/
-/******/16: function(module, exports, require) {
-
-// Whether object is array-like object
-
-'use strict';
-
-module.exports = function (x) {
-	return ((x != null) && (typeof x.length === 'number') &&
-		((typeof x === "object") || (typeof x === "string"))) || false;
-};
-
-
-/******/},
-/******/
-/******/17: function(module, exports, require) {
-
-// Whether object is plain object.
-// Its protototype should be Object.prototype and it cannot be host object.
-
-'use strict';
-
-var getPrototypeOf = Object.getPrototypeOf
-  , prototype      = Object.prototype
-  , toString       = prototype.toString
-
-  , id = {}.toString();
-
-module.exports = function (value) {
-	return (value && (typeof value === 'object') &&
-		(getPrototypeOf(value) === prototype) && (toString.call(value) === id)) ||
-		false;
-};
-
-
-/******/},
-/******/
-/******/18: function(module, exports, require) {
-
-// Analogous to Array.prototype.forEach
-//
-// Calls a function for each key-value pair found in object
-// Additionally you can provide compareFn to iterate object in desired order
-
-'use strict';
-
-module.exports = require(28)('forEach');
-
-
-/******/},
-/******/
-/******/19: function(module, exports, require) {
-
-// Analogous to Array.prototype.map
-//
-// Creates a new object with properties which values are results of calling
-// a provided function on every key-value pair in this object.
-
-'use strict';
-
-var forEach = require(18);
-
-module.exports = function (cb, thisArg) {
-	var o = {};
-	forEach.call(this, function (value, key) {
-		o[key] = cb.call(this, value, key);
-	}, thisArg);
-	return o;
-};
-
-
-/******/},
-/******/
 /******/20: function(module, exports, require) {
 
 // Merge properties of one object into other.
@@ -611,7 +598,7 @@ module.exports = function (cb, thisArg) {
 'use strict';
 
 var keys          = Object.keys
-  , assertNotNull = require(26)
+  , assertNotNull = require(27)
   , merge;
 
 merge = function (obj, key) {
@@ -634,9 +621,9 @@ module.exports = function (arg) {
 'use strict';
 
 var call       = Function.prototype.call
-  , curry      = require(11)
-  , isFunction = require(8)
-  , isCallable = require(27)
+  , curry      = require(12)
+  , isFunction = require(10)
+  , isCallable = require(28)
 
   , pattern, map;
 
@@ -672,15 +659,37 @@ module.exports = function (from, to, proto) {
 /******/
 /******/22: function(module, exports, require) {
 
+// Whether object is plain object.
+// Its protototype should be Object.prototype and it cannot be host object.
+
+'use strict';
+
+var getPrototypeOf = Object.getPrototypeOf
+  , prototype      = Object.prototype
+  , toString       = prototype.toString
+
+  , id = {}.toString();
+
+module.exports = function (value) {
+	return (value && (typeof value === 'object') &&
+		(getPrototypeOf(value) === prototype) && (toString.call(value) === id)) ||
+		false;
+};
+
+
+/******/},
+/******/
+/******/23: function(module, exports, require) {
+
 // Return function that sets pregiven value to given key
 //
 // getSet('bar').call(obj, 'foo') =def obj['foo'] = 'bar'
 
 'use strict';
 
-var assertNotNull = require(26);
+var assertNotNull = require(27);
 
-module.exports = require(30)(function (value) {
+module.exports = require(31)(function (value) {
 	return function (key) {
 		assertNotNull(this);
 		this[key] = value;
@@ -690,7 +699,7 @@ module.exports = require(30)(function (value) {
 
 /******/},
 /******/
-/******/23: function(module, exports, require) {
+/******/24: function(module, exports, require) {
 
 // Flatten object properties into one object
 //
@@ -699,8 +708,8 @@ module.exports = require(30)(function (value) {
 
 'use strict';
 
-var isPlainObject = require(17)
-  , forEach       = require(18)
+var isPlainObject = require(22)
+  , forEach       = require(17)
 
   , process;
 
@@ -721,24 +730,13 @@ module.exports = function () {
 
 /******/},
 /******/
-/******/24: function(module, exports, require) {
-
-// Get global object
-
-'use strict';
-
-module.exports = Function("return this")();
-
-
-/******/},
-/******/
 /******/25: function(module, exports, require) {
 
 // Throw error if given object is not callable
 
 'use strict';
 
-var isCallable = require(27);
+var isCallable = require(28);
 
 module.exports = function (fn) {
 	if (!isCallable(fn)) {
@@ -750,6 +748,21 @@ module.exports = function (fn) {
 /******/},
 /******/
 /******/26: function(module, exports, require) {
+
+'use strict';
+
+var toString = Object.prototype.toString
+
+  , id = '[object Arguments]';
+
+module.exports = function (x) {
+	return toString.call(x) === id;
+};
+
+
+/******/},
+/******/
+/******/27: function(module, exports, require) {
 
 // Throw error if given object is null or undefined
 
@@ -764,7 +777,7 @@ module.exports = function (value) {
 
 /******/},
 /******/
-/******/27: function(module, exports, require) {
+/******/28: function(module, exports, require) {
 
 // Whether object is callable
 // Inspired by: http://www.davidflanagan.com/2009/08/typeof-isfuncti.html
@@ -800,7 +813,18 @@ module.exports = function (obj) {
 
 /******/},
 /******/
-/******/28: function(module, exports, require) {
+/******/29: function(module, exports, require) {
+
+// Get global object
+
+'use strict';
+
+module.exports = Function("return this")();
+
+
+/******/},
+/******/
+/******/30: function(module, exports, require) {
 
 // Internal method, used by iteration functions.
 // Calls a function for each key-value pair found in object
@@ -810,7 +834,7 @@ module.exports = function (obj) {
 
 var call       = Function.prototype.call
   , getKeys    = Object.keys
-  , isCallable = require(27)
+  , isCallable = require(28)
 
   , compareValues;
 
@@ -841,22 +865,7 @@ module.exports = function (method) {
 
 /******/},
 /******/
-/******/29: function(module, exports, require) {
-
-'use strict';
-
-var toString = Object.prototype.toString
-
-  , id = '[object Arguments]';
-
-module.exports = function (x) {
-	return toString.call(x) === id;
-};
-
-
-/******/},
-/******/
-/******/30: function(module, exports, require) {
+/******/31: function(module, exports, require) {
 
 // Memoizes a given function
 
