@@ -1,11 +1,11 @@
 {
 	"name": "domjs-webpack",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"dependencies": {
-		"webpack": "0.1.x",
+		"webpack": "0.2.x",
 		"domjs": "0.2.0"
 	},
 	"scripts": {
-		"build": "node node_modules/webpack/bin/webpack test.js compiled.js"
+		"build": "node node_modules/webpack/bin/webpack --script-src-prefix js/ lib/test.js js/compiled.js"
 	}
 }
